@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ROBOTZSARU rendszer</title>
+<style>
+:root{--navy:#0b1f33;--blue:#123e60;--accent:#e0b44c;--paper:#f3f6fa;--text:#182638;--muted:#6c7b8d}
+*{box-sizing:border-box}
+body{margin:0;font-family:Arial,Helvetica,sans-serif;background:var(--paper);color:var(--text);min-height:100vh}
+.hidden{display:none!important}
+.login-wrap{min-height:100vh;display:grid;place-items:center;padding:22px;background:radial-gradient(circle at top right,#1f5377,var(--navy) 60%)}
+.login-card{width:min(420px,100%);background:#fff;border-radius:18px;padding:34px;box-shadow:0 20px 60px #0004}
+.brand{display:flex;align-items:center;gap:13px;margin-bottom:26px}
+.brand-mark{height:48px;width:48px;display:grid;place-items:center;background:var(--navy);color:var(--accent);font-weight:900;font-size:22px;border-radius:12px}
+h1,h2,p{margin-top:0}.login-card h1{font-size:24px;margin-bottom:7px}.sub{color:var(--muted);font-size:14px;line-height:1.5}
+label{display:block;font-size:13px;font-weight:700;margin:18px 0 7px}
+input{width:100%;padding:13px 14px;border:1px solid #d4dce5;border-radius:9px;font-size:15px;outline:none}
+input:focus{border-color:#24658e;box-shadow:0 0 0 3px #24658e20}
+button{border:0;border-radius:9px;padding:12px 16px;font-weight:700;font-size:14px;cursor:pointer;transition:.15s}
+button:hover{filter:brightness(1.07)}
+.primary{width:100%;margin-top:22px;background:var(--blue);color:white}
+.error{color:#b42318;font-size:13px;margin-top:12px}
+.topbar{background:var(--navy);color:white;padding:0 5%;display:flex;align-items:center;justify-content:space-between;gap:18px;min-height:74px}
+.topbrand{display:flex;align-items:center;gap:12px;font-weight:800;letter-spacing:.3px}
+.topbrand .brand-mark{height:39px;width:39px;border-radius:9px;font-size:18px}
+nav{display:flex;align-items:center;gap:8px}
+.navbtn{background:transparent;color:#eaf0f6;padding:11px 14px}
+.navbtn.active{background:#ffffff18;color:var(--accent)}
+.navbtn.logout{border:1px solid #ffffff40}
+main{width:min(1050px,92%);margin:36px auto}
+.welcome{background:linear-gradient(115deg,#123e60,#0b1f33);color:white;border-radius:16px;padding:30px;box-shadow:0 12px 30px #0b1f3318}
+.eyebrow{color:var(--accent);font-weight:800;text-transform:uppercase;font-size:11px;letter-spacing:1.8px;margin-bottom:12px}
+.welcome h1{font-size:clamp(24px,4vw,35px);margin-bottom:10px}
+.welcome p{color:#d7e3ed;margin-bottom:0}
+.panel{margin-top:24px;background:#fff;border:1px solid #e1e7ee;border-radius:15px;padding:24px;box-shadow:0 6px 22px #0b1f3308}
+.panel h2{font-size:20px;margin-bottom:8px}
+.searchrow{display:flex;gap:10px;margin-top:18px}
+.searchrow input{flex:1;min-width:0}
+.searchrow button{background:var(--blue);color:white;white-space:nowrap}
+.results{margin-top:14px;display:grid;gap:8px}
+.person-result{width:100%;text-align:left;background:#f7f9fb;border:1px solid #e0e7ee;border-left:6px solid #8795a4;padding:15px;display:flex;justify-content:space-between;align-items:center;color:var(--text);gap:12px}.person-result.status-wanted{background:#fff0f0;border-color:#efb6b6;border-left-color:#c62828}.person-result.status-prior{background:#fff6df;border-color:#f1d28c;border-left-color:#e69b00}.person-result.status-clean{background:#eaf9ef;border-color:#a8d9b8;border-left-color:#2e8b57}.result-meta{display:flex;align-items:center;gap:10px}.result-status{font-size:11px;font-weight:900;letter-spacing:.5px;padding:6px 8px;border-radius:6px;white-space:nowrap}.status-wanted .result-status{background:#b71c1c;color:#fff}.status-prior .result-status{background:#e69b00;color:#211500}.status-clean .result-status{background:#21864b;color:#fff}.manage-layout{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.2fr);gap:22px;margin-top:18px}.manage-form{background:#f7f9fb;border:1px solid #e1e7ee;border-radius:12px;padding:18px}.manage-form label{margin-top:13px}.manage-form input,.manage-form select{width:100%;padding:12px;border:1px solid #d4dce5;border-radius:9px;font-size:14px;background:white}.form-actions{display:flex;gap:8px;margin-top:18px}.form-actions button{flex:1}.save-btn{background:var(--blue);color:#fff}.cancel-btn{background:#e8edf2;color:var(--text)}.manage-list{display:grid;gap:8px;align-content:start}.manage-person{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:12px;border:1px solid #e0e7ee;border-left:5px solid #8795a4;border-radius:9px;background:#fff}.manage-person.status-wanted{border-left-color:#c62828;background:#fff7f7}.manage-person.status-prior{border-left-color:#e69b00;background:#fffbf0}.manage-person.status-clean{border-left-color:#2e8b57;background:#f5fff8}.manage-person strong{display:block;font-size:14px}.manage-person small{display:block;color:var(--muted);margin-top:4px}.edit-btn{background:#e7eef5;color:var(--blue);padding:9px 11px}.form-note{font-size:12px;color:var(--muted);line-height:1.45;margin-top:10px}.form-message{font-size:13px;margin-top:12px;color:#21864b;font-weight:700}
+.person-result span{font-weight:700}
+.person-result small{color:var(--muted)}
+.person-result:hover{border-color:#7799b2;background:#f0f6fa}
+.profile-head{display:flex;align-items:center;gap:15px;padding-bottom:20px;border-bottom:1px solid #e5eaf0}
+.avatar{width:56px;height:56px;border-radius:14px;background:#e9f0f5;color:var(--blue);display:grid;place-items:center;font-size:24px;font-weight:800}
+.profile-head h2{margin:0 0 5px}
+.profile-head p{margin:0;color:var(--muted);font-size:13px}
+.data-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin-top:20px}
+.status-badge{display:inline-flex;align-items:center;gap:8px;background:var(--blue);color:#fff;padding:9px 13px;border-radius:7px;font-weight:900;letter-spacing:1px;font-size:13px}
+#profilePanel.status-wanted{border:2px solid #c62828;background:#fff5f5}
+#profilePanel.status-wanted .profile-head{border-color:#efb6b6}
+#profilePanel.status-wanted .avatar{background:#c62828;color:#fff}
+#profilePanel.status-wanted .data-item{background:#fff0f0;border-color:#efb6b6}
+#profilePanel.status-wanted .status-badge,#profilePanel.status-wanted .pdf-button{background:#b71c1c;color:#fff}
+#profilePanel.status-prior{border:2px solid #e69b00;background:#fffaf0}
+#profilePanel.status-prior .profile-head{border-color:#f1d28c}
+#profilePanel.status-prior .avatar{background:#e69b00;color:#fff}
+#profilePanel.status-prior .data-item{background:#fff4d9;border-color:#f1d28c}
+#profilePanel.status-prior .status-badge{background:#e68a00;color:#211500}
+#profilePanel.status-clean{border:2px solid #2e8b57;background:#f2fff6}
+#profilePanel.status-clean .profile-head{border-color:#a8d9b8}
+#profilePanel.status-clean .avatar{background:#2e8b57;color:#fff}
+#profilePanel.status-clean .data-item{background:#e9f9ef;border-color:#a8d9b8}
+#profilePanel.status-clean .status-badge{background:#21864b;color:#fff}
+.status-dot{width:8px;height:8px;border-radius:50%;background:#fff;display:inline-block}
+.pdf-button{display:inline-flex;align-items:center;gap:9px;margin-top:18px;background:#8f111b;color:white;text-decoration:none;padding:12px 16px;border-radius:9px;font-weight:700;font-size:14px}
+.pdf-button:hover{background:#6d0c14}
+.profile-status{margin-top:18px}
+.data-item{padding:15px;background:#f7f9fb;border:1px solid #e1e7ee;border-radius:10px}
+.data-item .key{font-size:12px;color:var(--muted);margin-bottom:7px}
+.data-item .value{font-size:15px;font-weight:700;overflow-wrap:anywhere}
+.empty{padding:16px;color:var(--muted);font-size:14px;background:#f7f9fb;border-radius:9px}
+footer{text-align:center;color:#7a8795;font-size:12px;padding:30px 16px}
+@media(max-width:760px){.manage-layout{grid-template-columns:1fr}}@media(max-width:620px){.topbar{padding:14px 4%;align-items:flex-start;flex-direction:column}.topbar nav{width:100%;flex-wrap:wrap}.navbtn{flex:1}.welcome{padding:24px}.panel{padding:18px}.searchrow{flex-direction:column}.searchrow button{width:100%}.data-grid{grid-template-columns:1fr}.person-result{align-items:flex-start;flex-direction:column}.result-meta{width:100%;justify-content:space-between}.manage-person{align-items:flex-start}.form-actions{flex-direction:column}}
+</style>
+</head>
+<body>
+<section id="loginScreen" class="login-wrap">
+  <form id="loginForm" class="login-card">
+    <div class="brand"><div class="brand-mark">RZ</div><div><strong>ROBOTZSARU rendszer</strong><div class="sub">Rendőrségi RP-nyilvántartás</div></div></div>
+    <h1>Bejelentkezés</h1>
+    <p class="sub">A rendszer használatához add meg a belépési adataidat.</p>
+    <label for="username">Felhasználónév</label>
+    <input id="username" name="username" autocomplete="username" required placeholder="Felhasználónév">
+    <label for="password">Jelszó</label>
+    <input id="password" name="password" type="password" autocomplete="current-password" required placeholder="Jelszó">
+    <button class="primary" type="submit">Belépés</button>
+    <div id="loginError" class="error" role="alert"></div>
+  </form>
+</section>
+
+<section id="appScreen" class="hidden">
+  <header class="topbar">
+    <div class="topbrand"><div class="brand-mark">RZ</div><span>ROBOTZSARU RENDSZER</span></div>
+    <nav aria-label="Fő navigáció">
+      <button id="navSearch" class="navbtn active" type="button">Lekérdezés</button>
+      <button id="navPeople" class="navbtn" type="button">Személyek kezelése</button>
+      <button id="logoutBtn" class="navbtn logout" type="button">Kilépés</button>
+    </nav>
+  </header>
+  <main>
+    <section class="welcome">
+      <div class="eyebrow">Sikeres azonosítás</div>
+      <h1>Üdvözöljük Lancz Hunor Atilla r. Ezredes!</h1>
+      <p>Üdvözöljük a ROBOTZSARU rendszerben. Válaszd a lekérdezést egy személy adatlapjának megnyitásához.</p>
+    </section>
+
+    <section id="searchPanel" class="panel">
+      <h2>Személy keresése</h2>
+      <p class="sub">Kezdj el beírni egy nevet, majd válaszd ki a találatok közül a keresett személyt.</p>
+      <div class="searchrow">
+        <input id="searchInput" type="search" placeholder="Keresés név alapján…" autocomplete="off" aria-label="Keresés név alapján">
+        <button id="searchBtn" type="button">Keresés</button>
+      </div>
+      <div id="results" class="results" aria-live="polite"><div class="empty">Írj be egy nevet a kereséshez.</div></div>
+    </section>
+
+    <section id="managePanel" class="panel hidden">
+      <h2>Személyek kezelése</h2>
+      <p class="sub">Új személyt vehetsz fel, illetve a nyilvántartásban szereplő személyek adatait módosíthatod. A módosítások ebben a böngészőben mentődnek el.</p>
+      <div class="manage-layout">
+        <form id="personForm" class="manage-form">
+          <h3 id="personFormTitle">Új személy hozzáadása</h3><input type="hidden" id="editPersonId">
+          <label for="personName">Teljes név *</label><input id="personName" required maxlength="120" placeholder="Pl. Minta János">
+          <label for="personBirth">Születési dátum</label><input id="personBirth" placeholder="ÉÉÉÉ. HH. NN.">
+          <label for="personSchool">Osztály / iskola</label><input id="personSchool" maxlength="160" placeholder="Iskola és osztály">
+          <label for="personStatus">Nyilvántartási státusz *</label><select id="personStatus" required><option value="wanted">Körözött – piros</option><option value="prior">Priuszos – narancssárga</option><option value="clean">Büntetlen – zöld</option></select>
+          <label for="personPdf">Dokumentum PDF elérési útja (nem kötelező)</label><input id="personPdf" placeholder="Pl. dokumentumok/001.pdf">
+          <div class="form-actions"><button class="save-btn" type="submit">Mentés</button><button class="cancel-btn" id="cancelEditBtn" type="button">Űrlap ürítése</button></div>
+          <div id="personFormMessage" class="form-message" aria-live="polite"></div>
+          <p class="form-note">A PDF mezőbe a HTML-fájlhoz képest relatív útvonalat írj, például: <b>20261013/001.pdf</b>. Üresen is hagyhatod.</p>
+        </form>
+        <div><h3>Nyilvántartott személyek</h3><div id="manageList" class="manage-list"></div></div>
+      </div>
+    </section>
+
+    <section id="profilePanel" class="panel hidden">
+      <div class="profile-head">
+        <div class="avatar" id="avatar">SZ</div>
+        <div><h2 id="profileName">Személy neve</h2><p>Személyi adatlap</p></div>
+      </div>
+      <div class="data-grid">
+        <div class="data-item"><div class="key">Teljes név</div><div class="value" id="dataName">—</div></div>
+        <div class="data-item"><div class="key">Született</div><div class="value" id="dataBirth">—</div></div>
+        <div class="data-item" style="grid-column:1/-1"><div class="key">Osztály</div><div class="value" id="dataSchool">—</div></div>
+      </div>
+      <div class="profile-status"><span class="status-badge"><span class="status-dot"></span><span id="dataStatus">ÁLLAPOT</span></span></div>
+      <a id="pdfButton" class="pdf-button" href="#" target="_blank" rel="noopener noreferrer"><span aria-hidden="true">📄</span> Körözési dokumentum megnyitása (PDF)</a>
+    </section>
+  </main>
+  <footer>ROBOTZSARU rendszer • RP felület</footer>
+</section>
+
+<script>
+/*
+  FONTOS: ez egy egyszerű, önálló bemutató HTML. A belépési adatok a böngészőben
+  olvasható JavaScriptben szerepelnek, ezért ez nem valódi biztonsági rendszer.
+  Éles használathoz szerveroldali hitelesítés és hozzáférés-védelem szükséges.
+*/
+const users = [
+  { username: "lanczhunoratilla", password: "Huni13", welcome: "Üdvözöljük Lancz Hunor Atilla r. Ezredes!" },
+  { username: "sarficsanad", password: "Sárfi.Csanád", welcome: "Üdvözöljük Sárfi Csanád r. főtörzszászlós!" }
+];
+const defaultPeople = [
+  { id: "p1", name: "Asztalos Áron", birth: "2010. 10. 20.", school: "VSZC Ipari Technikum - 10.E", status: "clean", pdf: "" },
+  { id: "p2", name: "Bagó Péter", birth: "2010. 12. 13.", school: "VSZC Ipari Technikum - 10.E", status: "clean", pdf: "" },
+  { id: "p3", name: "Bogdány Bánk", birth: "2010. 06. 25.", school: "VSZC Ipari Technikum - 10.E", status: "clean", pdf: "" },
+  { id: "p4", name: "Esztergályos Marcell", birth: "2010. 12. 17.", school: "VSZC Ipari Technikum - 10.E", status: "clean", pdf: "" },
+  { id: "p5", name: "Földing Soma", birth: "????. ??. ??.", school: "VSZC Ipari Technikum - 10.E", status: "clean", pdf: "" },
+  { id: "p6", name: "Fülöp Lorena Éda", birth: "2010. 07. 30.", school: "VSZC Ipari Technikum - 10.E", status: "clean", pdf: "" },
+  { id: "p7", name: "Gasztonyi Gergő", birth: "????. ??. ??.", school: "VSZC Ipari Technikum - 10.E", status: "clean", pdf: "" },
+  { id: "p8", name: "Giczi Bálint", birth: "2010. 03. 29.", school: "VSZC Ipari Technikum - 10.E", status: "clean", pdf: "" },
+  { id: "p9", name: "Hoffmann Dávid", birth: "2010. 02. 04.", school: "VSZC Ipari Technikum - 10.E", status: "clean", pdf: "" },
+  { id: "p10", name: "Horváth Milán", birth: "2010. 12. 27.", school: "VSZC Ipari Technikum - 10.E", status: "clean", pdf: "" },
+  { id: "p11", name: "Horváth Péter", birth: "2010. 04. 05.", school: "VSZC Ipari Technikum - 10.E", status: "clean", pdf: "" },
+  { id: "p12", name: "Kovács Tamás", birth: "2010. 03. 02.", school: "VSZC Ipari Technikum - 10.E", status: "clean", pdf: "" },
+  { id: "p13", name: "Kőkuti Zolta", birth: "2010. 09. 17.", school: "VSZC Ipari Technikum - 10.E", status: "clean", pdf: "" },
+  { id: "p14", name: "Lancz Hunor Atilla", birth: "2010. 08. 18.", school: "VSZC Ipari Technikum - 10.E", status: "clean", pdf: "" },
+  { id: "p15", name: "Lipták Noel Zsolt", birth: "2010. 01. 10.", school: "VSZC Ipari Technikum - 10.E", status: "clean", pdf: "" },
+  { id: "p16", name: "Mészáros Bálint Gergely", birth: "2010. 04. 16.", school: "VSZC Ipari Technikum - 10.E", status: "clean", pdf: "" },
+  { id: "p17", name: "Németh Zsombor Soma", birth: "2010. 11. 06.", school: "VSZC Ipari Technikum - 10.E", status: "clean", pdf: "" },
+  { id: "p18", name: "Nézics Bence", birth: "2010. 08. 08.", school: "VSZC Ipari Technikum - 10.E", status: "clean", pdf: "" },
+  { id: "p19", name: "Parlag Zalán", birth: "2010. 11. 04.", school: "VSZC Ipari Technikum - 10.E", status: "clean", pdf: "" },
+  { id: "p20", name: "Prebszl Olivér", birth: "2010. 02. 15.", school: "VSZC Ipari Technikum - 10.E", status: "clean", pdf: "" },
+  { id: "p21", name: "Presits Péter Antal", birth: "2010. 11. 02.", school: "VSZC Ipari Technikum - 10.E", status: "prior", pdf: "" },
+  { id: "p22", name: "Sárfi Csanád", birth: "2010. 11. 04.", school: "VSZC Ipari Technikum - 10.E", status: "clean", pdf: "" },
+  { id: "p23", name: "Sperg Vince", birth: "2010. 09. 29.", school: "VSZC Ipari Technikum - 10.E", status: "clean", pdf: "" },
+  { id: "p24", name: "Sütő József", birth: "????. ??. ??.", school: "VSZC Ipari Technikum - 10.E", status: "clean", pdf: "" },
+  { id: "p25", name: "Szamosi Ádám", birth: "2011. 02. 01.", school: "VSZC Ipari Technikum - 10.E", status: "prior", pdf: "" },
+  { id: "p26", name: "Szendrey Olivér", birth: "2010. 06. 01.", school: "VSZC Ipari Technikum - 10.E", status: "clean", pdf: "" },
+  { id: "p27", name: "Varga Csanád Lehel", birth: "2010. 10. 29.", school: "VSZC Ipari Technikum - 10.E", status: "clean", pdf: "" },
+  { id: "p28", name: "Varga Zétény", birth: "2010. 05. 02.", school: "VSZC Ipari Technikum - 10.E", status: "clean", pdf: "" },
+  { id: "p29", name: "Vörös Norbert", birth: "2010. 12. 03.", school: "VSZC Ipari Technikum - 10.E", status: "prior", pdf: "" }
+];
+function loadPeople() {
+  try { const saved = localStorage.getItem("robotzsaruPeople"); if (saved) { const parsed = JSON.parse(saved); if (Array.isArray(parsed)) return parsed; } } catch (error) { console.warn("A mentett nyilvántartás nem olvasható.", error); }
+  return defaultPeople.map(person => ({...person}));
+}
+let people = loadPeople();
+let nextPersonId = Math.max(0, ...people.map(person => Number(String(person.id).replace(/\D/g, "")) || 0)) + 1;
+function savePeople() { localStorage.setItem("robotzsaruPeople", JSON.stringify(people)); }
+
+const loginScreen = document.getElementById("loginScreen");
+const appScreen = document.getElementById("appScreen");
+const loginForm = document.getElementById("loginForm");
+const loginError = document.getElementById("loginError");
+const searchInput = document.getElementById("searchInput");
+const results = document.getElementById("results");
+const profilePanel = document.getElementById("profilePanel");
+
+loginForm.addEventListener("submit", function(event) {
+  event.preventDefault();
+  const username = document.getElementById("username").value.trim();
+  const password = document.getElementById("password").value;
+  const user = users.find(item => item.username === username && item.password === password);
+  if (user) {
+    loginError.textContent = ""; loginScreen.classList.add("hidden"); appScreen.classList.remove("hidden");
+    document.querySelector(".welcome h1").textContent = user.welcome;
+    renderResults(""); renderManageList(); searchInput.focus();
+  } else { loginError.textContent = "Hibás felhasználónév vagy jelszó."; }
+});
+
+function statusClass(status) { return status === "prior" ? "status-prior" : status === "clean" ? "status-clean" : "status-wanted"; }
+function statusLabel(status) { return ({wanted:"KÖRÖZÖTT", prior:"PRIUSZOS", clean:"BÜNTETLEN"})[status] || "KÖRÖZÖTT"; }
+function renderResults(query) {
+  const normalized = query.trim().toLocaleLowerCase("hu");
+  const matches = people.filter(person => person.name.toLocaleLowerCase("hu").includes(normalized));
+  results.replaceChildren();
+  if (!normalized) { results.innerHTML = '<div class="empty">Írj be egy nevet a kereséshez.</div>'; return; }
+  if (!matches.length) { results.innerHTML = '<div class="empty">Nincs találat erre a névre.</div>'; return; }
+  matches.forEach(person => {
+    const button=document.createElement("button"); button.type="button"; button.className="person-result "+statusClass(person.status);
+    const name=document.createElement("span"); name.textContent=person.name;
+    const meta=document.createElement("div"); meta.className="result-meta";
+    const badge=document.createElement("small"); badge.className="result-status"; badge.textContent=statusLabel(person.status);
+    const hint=document.createElement("small"); hint.textContent="Adatlap megnyitása  ›";
+    meta.append(badge,hint); button.append(name,meta); button.addEventListener("click",()=>showProfile(person)); results.appendChild(button);
+  });
+}
+
+function showProfile(person) {
+  document.getElementById("profileName").textContent = person.name;
+  document.getElementById("dataName").textContent = person.name;
+  document.getElementById("dataBirth").textContent = person.birth || "Nincs megadva";
+  document.getElementById("dataSchool").textContent = person.school || "Nincs megadva";
+  profilePanel.classList.remove("status-wanted", "status-prior", "status-clean");
+  profilePanel.classList.add(statusClass(person.status));
+  document.getElementById("dataStatus").textContent = person.statusLabel || statusLabel(person.status);
+  const pdfButton = document.getElementById("pdfButton");
+  if (person.pdf) {
+    pdfButton.href = person.pdf;
+    pdfButton.classList.remove("hidden");
+    pdfButton.textContent = "📄 Dokumentum megnyitása (PDF)";
+    pdfButton.setAttribute("aria-label", person.name + " dokumentumának megnyitása PDF-ben");
+  } else {
+    pdfButton.removeAttribute("href");
+    pdfButton.classList.add("hidden");
+  }
+  document.getElementById("avatar").textContent = person.name.split(/\s+/).map(part => part[0]).slice(0,2).join("").toLocaleUpperCase("hu");
+  profilePanel.classList.remove("hidden");
+  profilePanel.scrollIntoView({behavior:"smooth", block:"start"});
+}
+
+document.getElementById("searchBtn").addEventListener("click", () => renderResults(searchInput.value));
+searchInput.addEventListener("input", () => renderResults(searchInput.value));
+const searchPanel=document.getElementById("searchPanel"), managePanel=document.getElementById("managePanel");
+const navSearch=document.getElementById("navSearch"), navPeople=document.getElementById("navPeople");
+function setActiveTab(tab) {
+  navSearch.classList.toggle("active",tab==="search"); navPeople.classList.toggle("active",tab==="people");
+  searchPanel.classList.toggle("hidden",tab!=="search"); managePanel.classList.toggle("hidden",tab!=="people"); profilePanel.classList.add("hidden");
+  if(tab==="search"){searchPanel.scrollIntoView({behavior:"smooth",block:"start"});searchInput.focus();} else {renderManageList();managePanel.scrollIntoView({behavior:"smooth",block:"start"});}
+}
+navSearch.addEventListener("click",()=>setActiveTab("search")); navPeople.addEventListener("click",()=>setActiveTab("people"));
+function renderManageList() {
+  const list=document.getElementById("manageList"); list.replaceChildren();
+  if(!people.length){list.innerHTML='<div class="empty">Még nincs felvett személy.</div>';return;}
+  [...people].sort((a,b)=>a.name.localeCompare(b.name,"hu")).forEach(person=>{
+    const row=document.createElement("div");row.className="manage-person "+statusClass(person.status);
+    const info=document.createElement("div"),name=document.createElement("strong"),details=document.createElement("small");
+    name.textContent=person.name;details.textContent=(person.birth||"Születési dátum nincs megadva")+" • "+statusLabel(person.status);info.append(name,details);
+    const edit=document.createElement("button");edit.type="button";edit.className="edit-btn";edit.textContent="Szerkesztés";edit.addEventListener("click",()=>startEditPerson(person.id));row.append(info,edit);list.appendChild(row);
+  });
+}
+function resetPersonForm(){document.getElementById("personForm").reset();document.getElementById("editPersonId").value="";document.getElementById("personFormTitle").textContent="Új személy hozzáadása";document.getElementById("personFormMessage").textContent="";}
+function startEditPerson(id){
+  const person=people.find(item=>item.id===id);if(!person)return;
+  document.getElementById("editPersonId").value=person.id;document.getElementById("personName").value=person.name||"";document.getElementById("personBirth").value=person.birth||"";
+  document.getElementById("personSchool").value=person.school||"";document.getElementById("personStatus").value=person.status||"wanted";document.getElementById("personPdf").value=person.pdf||"";
+  document.getElementById("personFormTitle").textContent="Személy szerkesztése";document.getElementById("personFormMessage").textContent="Módosítsd az adatokat, majd kattints a Mentés gombra.";document.getElementById("personForm").scrollIntoView({behavior:"smooth",block:"start"});
+}
+document.getElementById("personForm").addEventListener("submit",event=>{
+  event.preventDefault();const id=document.getElementById("editPersonId").value;
+  const data={name:document.getElementById("personName").value.trim(),birth:document.getElementById("personBirth").value.trim(),school:document.getElementById("personSchool").value.trim(),status:document.getElementById("personStatus").value,pdf:document.getElementById("personPdf").value.trim()};
+  if(!data.name)return;
+  if(id){const index=people.findIndex(person=>person.id===id);if(index!==-1)people[index]={...people[index],...data};}else{data.id="p"+nextPersonId++;people.push(data);}
+  savePeople();renderManageList();renderResults(searchInput.value);resetPersonForm();document.getElementById("personFormMessage").textContent=id?"A személy adatai frissültek.":"Az új személy mentve.";
+});
+document.getElementById("cancelEditBtn").addEventListener("click",resetPersonForm);
+
+document.getElementById("logoutBtn").addEventListener("click", () => {
+  loginForm.reset();
+  searchInput.value = "";
+  profilePanel.classList.add("hidden");
+  setActiveTab("search"); resetPersonForm();
+  appScreen.classList.add("hidden");
+  loginScreen.classList.remove("hidden");
+  loginError.textContent = "";
+  document.getElementById("username").focus();
+});
+</script>
+</body>
+</html>
